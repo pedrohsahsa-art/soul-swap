@@ -1,0 +1,43 @@
+name: Publish tester prerelease
+on:
+  push:
+    tags:
+      - 'v*-test.*'
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify tag matches package
+        shell: pwsh
+        run: |
+          $version = (Get-Content release/compatibility.json -Raw | ConvertFrom-Json).package_version
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'Tag/package version mismatch' }
+      - run: node tests/controller.test.cjs
+      - run: python tests/build_test.py
+      - run: python tests/package_test.py
+      - name: Parse Windows PowerShell scripts
+        shell: powershell
+        run: |
+          Get-ChildItem scripts,tests -Filter *.ps1 -Recurse | ForEach-Object {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+          }
+      - run: python scripts/package.py
+      - name: Publish prerelease ZIP and checksum
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $files = (Get-ChildItem dist -File).FullName
+          gh release create "$env:GITHUB_REF_NAME" @files --prerelease --title "SOUL SWAP $env:GITHUB_REF_NAME" --notes-file docs/RELEASE-NOTES.md

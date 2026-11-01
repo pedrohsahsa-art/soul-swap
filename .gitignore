@@ -1,0 +1,22 @@
+# Installed game, compiled archives and downloaded tools
+/play/
+/play-v*/
+/build/
+/dist/
+/.cache/
+/.logs/
+/tools/
+/assets/reference/
+*.win
+*.exe
+*.dll
+*.dat
+*.ogg
+*.zip
+*.log
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+.env
+.env.*

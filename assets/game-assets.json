@@ -1,0 +1,539 @@
+{
+  "sprites": [
+    {
+      "name": "spr_dodgeheart",
+      "width": 20,
+      "height": 20,
+      "origin_x": 0,
+      "origin_y": 0,
+      "frames": 2,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 19,
+      "bbox_bottom": 19
+    },
+    {
+      "name": "spr_dodgeheart_centered_white",
+      "width": 20,
+      "height": 20,
+      "origin_x": 10,
+      "origin_y": 10,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 19,
+      "bbox_bottom": 19
+    },
+    {
+      "name": "spr_dodgeheartmask",
+      "width": 20,
+      "height": 20,
+      "origin_x": 0,
+      "origin_y": 0,
+      "frames": 2,
+      "speed": 1.0,
+      "bbox_left": 2,
+      "bbox_top": 2,
+      "bbox_right": 17,
+      "bbox_bottom": 17
+    },
+    {
+      "name": "spr_smallbullet",
+      "width": 16,
+      "height": 16,
+      "origin_x": 8,
+      "origin_y": 8,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 6,
+      "bbox_top": 6,
+      "bbox_right": 9,
+      "bbox_bottom": 9
+    },
+    {
+      "name": "spr_diamondbullet",
+      "width": 33,
+      "height": 32,
+      "origin_x": 16,
+      "origin_y": 15,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 10,
+      "bbox_top": 14,
+      "bbox_right": 23,
+      "bbox_bottom": 17
+    },
+    {
+      "name": "spr_spadebullet",
+      "width": 36,
+      "height": 34,
+      "origin_x": 18,
+      "origin_y": 17,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 10,
+      "bbox_top": 12,
+      "bbox_right": 26,
+      "bbox_bottom": 22
+    },
+    {
+      "name": "spr_meow",
+      "width": 12,
+      "height": 20,
+      "origin_x": 6,
+      "origin_y": 10,
+      "frames": 1,
+      "speed": 15.0,
+      "bbox_left": 4,
+      "bbox_top": 6,
+      "bbox_right": 7,
+      "bbox_bottom": 13
+    },
+    {
+      "name": "spr_battlebg_0",
+      "width": 75,
+      "height": 75,
+      "origin_x": 37,
+      "origin_y": 37,
+      "frames": 2,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 74,
+      "bbox_bottom": 74
+    },
+    {
+      "name": "spr_battlebg_stretch",
+      "width": 75,
+      "height": 75,
+      "origin_x": 37,
+      "origin_y": 37,
+      "frames": 2,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 74,
+      "bbox_bottom": 74
+    },
+    {
+      "name": "spr_hpname",
+      "width": 16,
+      "height": 11,
+      "origin_x": 0,
+      "origin_y": 0,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 15,
+      "bbox_bottom": 7
+    },
+    {
+      "name": "spr_custommenu_arrow",
+      "width": 12,
+      "height": 8,
+      "origin_x": 6,
+      "origin_y": 4,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 11,
+      "bbox_bottom": 7
+    },
+    {
+      "name": "spr_krisb_idle",
+      "width": 36,
+      "height": 38,
+      "origin_x": 3,
+      "origin_y": 0,
+      "frames": 6,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 35,
+      "bbox_bottom": 37
+    },
+    {
+      "name": "spr_krisb_attackready",
+      "width": 63,
+      "height": 50,
+      "origin_x": 3,
+      "origin_y": 5,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 1,
+      "bbox_top": 0,
+      "bbox_right": 28,
+      "bbox_bottom": 42
+    },
+    {
+      "name": "spr_krisb_hurt",
+      "width": 63,
+      "height": 44,
+      "origin_x": 3,
+      "origin_y": 5,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 2,
+      "bbox_top": 6,
+      "bbox_right": 34,
+      "bbox_bottom": 42
+    },
+    {
+      "name": "spr_krisb_defend",
+      "width": 35,
+      "height": 40,
+      "origin_x": 3,
+      "origin_y": 2,
+      "frames": 6,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 34,
+      "bbox_bottom": 39
+    },
+    {
+      "name": "spr_krisb_victory",
+      "width": 34,
+      "height": 37,
+      "origin_x": 1,
+      "origin_y": -1,
+      "frames": 9,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 33,
+      "bbox_bottom": 36
+    },
+    {
+      "name": "spr_susieb_idle",
+      "width": 54,
+      "height": 45,
+      "origin_x": 19,
+      "origin_y": 0,
+      "frames": 4,
+      "speed": 1.0,
+      "bbox_left": 1,
+      "bbox_top": 3,
+      "bbox_right": 53,
+      "bbox_bottom": 43
+    },
+    {
+      "name": "spr_susieb_attackready",
+      "width": 103,
+      "height": 71,
+      "origin_x": 21,
+      "origin_y": 24,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 27,
+      "bbox_right": 62,
+      "bbox_bottom": 67
+    },
+    {
+      "name": "spr_susieb_hurt",
+      "width": 54,
+      "height": 45,
+      "origin_x": 20,
+      "origin_y": 0,
+      "frames": 1,
+      "speed": 1.0,
+      "bbox_left": 2,
+      "bbox_top": 0,
+      "bbox_right": 49,
+      "bbox_bottom": 43
+    },
+    {
+      "name": "spr_susieb_defend",
+      "width": 56,
+      "height": 66,
+      "origin_x": 17,
+      "origin_y": 22,
+      "frames": 6,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 55,
+      "bbox_bottom": 65
+    },
+    {
+      "name": "spr_susieb_victory",
+      "width": 60,
+      "height": 51,
+      "origin_x": 25,
+      "origin_y": 6,
+      "frames": 20,
+      "speed": 1.0,
+      "bbox_left": 0,
+      "bbox_top": 0,
+      "bbox_right": 59,
+      "bbox_bottom": 50
+    }
+  ],
+  "fonts": [
+    {
+      "name": "fnt_tinynoelle",
+      "display_name": "DotumChe",
+      "em_size": 7.0,
+      "texture": true,
+      "glyphs": 96,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "80",
+          "SourceY": "13",
+          "SourceWidth": "4",
+          "SourceHeight": "8",
+          "Shift": "5",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_dotumche",
+      "display_name": "DotumChe",
+      "em_size": 12.0,
+      "texture": true,
+      "glyphs": 96,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "102",
+          "SourceY": "20",
+          "SourceWidth": "8",
+          "SourceHeight": "14",
+          "Shift": "9",
+          "Offset": "1",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_mainbig",
+      "display_name": "8bitoperator JVE",
+      "em_size": 24.0,
+      "texture": true,
+      "glyphs": 96,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "184",
+          "SourceY": "36",
+          "SourceWidth": "12",
+          "SourceHeight": "26",
+          "Shift": "14",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_main",
+      "display_name": "8bitoperator JVE",
+      "em_size": 12.0,
+      "texture": true,
+      "glyphs": 96,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "2",
+          "SourceY": "36",
+          "SourceWidth": "6",
+          "SourceHeight": "13",
+          "Shift": "7",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_comicsans",
+      "display_name": "Comic Sans MS",
+      "em_size": 10.0,
+      "texture": true,
+      "glyphs": 96,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "32",
+          "SourceY": "23",
+          "SourceWidth": "8",
+          "SourceHeight": "15",
+          "Shift": "10",
+          "Offset": "1",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_small",
+      "display_name": "Crypt of Tomorrow",
+      "em_size": 6.0,
+      "texture": true,
+      "glyphs": 96,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "26",
+          "SourceY": "11",
+          "SourceWidth": "4",
+          "SourceHeight": "5",
+          "Shift": "5",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_comicsans",
+      "display_name": "HappyRuikaKyohkan-07.ttf",
+      "em_size": 30.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "521",
+          "SourceY": "497",
+          "SourceWidth": "25",
+          "SourceHeight": "33",
+          "Shift": "24",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_dotumche",
+      "display_name": "TT_UDKakugoC80-M.ttf",
+      "em_size": 14.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "836",
+          "SourceY": "382",
+          "SourceWidth": "8",
+          "SourceHeight": "20",
+          "Shift": "7",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_mainbig",
+      "display_name": "JF-Dot-Shinonome14.ttf",
+      "em_size": 28.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "712",
+          "SourceY": "662",
+          "SourceWidth": "13",
+          "SourceHeight": "33",
+          "Shift": "14",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_small",
+      "display_name": "TT_UDKakugoC80-M.ttf",
+      "em_size": 10.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "134",
+          "SourceY": "452",
+          "SourceWidth": "6",
+          "SourceHeight": "15",
+          "Shift": "5",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_tinynoelle",
+      "display_name": "TT_UDKakugoC80-M.ttf",
+      "em_size": 20.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "662",
+          "SourceY": "756",
+          "SourceWidth": "11",
+          "SourceHeight": "29",
+          "Shift": "10",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_main",
+      "display_name": "JF-Dot-Shinonome14.ttf",
+      "em_size": 14.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "55",
+          "SourceY": "427",
+          "SourceWidth": "8",
+          "SourceHeight": "17",
+          "Shift": "7",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    },
+    {
+      "name": "fnt_ja_kakugo",
+      "display_name": "TT_UDKakugoC80-M.ttf",
+      "em_size": 18.0,
+      "texture": true,
+      "glyphs": 1708,
+      "glyph_A": [
+        {
+          "Character": "65",
+          "SourceX": "243",
+          "SourceY": "602",
+          "SourceWidth": "10",
+          "SourceHeight": "25",
+          "Shift": "10",
+          "Offset": "0",
+          "Kerning": "UndertaleModLib.UndertaleSimpleListShort`1[UndertaleModLib.Models.UndertaleFont+Glyph+GlyphKerning]",
+          "UnknownAlwaysZero": "0"
+        }
+      ]
+    }
+  ]
+}

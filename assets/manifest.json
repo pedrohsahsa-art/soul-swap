@@ -1,0 +1,28 @@
+{
+  "source_archive": "chapter2_windows/data.win",
+  "source_sha256": "047c5ab003e3e017a709c02757e119c81e0327760169512110fd276b19241e68",
+  "usage": "Private local mod using the user's installed game. These assets are copyrighted game content, not newly licensed or redistributable artwork.",
+  "sprites": {
+    "spr_dodgeheart_centered_white": "SOUL, player indicators and menu cursor; centered original white sprite tinted per player",
+    "spr_diamondbullet": "Rajada, Ricochete, Orbita, Costura path shots, reflector, hit particles and mouse target indicator",
+    "spr_smallbullet": "Guided Cometa, mine, Pulso rings, Jardim seeds and opening previews",
+    "spr_spadebullet": "Muralha, Pinca crossfire, Bumerangue, wall projectiles and warnings",
+    "spr_battlebg_stretch": "Original battle-frame and clickable panels using native nine-slice stretched drawing",
+    "spr_hpname": "Original HP label",
+    "spr_custommenu_arrow": "Emitter/safe-lane pointer",
+    "spr_krisb_idle": "Kris idle animation",
+    "spr_krisb_attackready": "Kris attack pose",
+    "spr_krisb_defend": "Kris defense animation",
+    "spr_krisb_hurt": "Kris hit feedback",
+    "spr_krisb_victory": "Kris victory animation",
+    "spr_susieb_idle": "Susie idle animation",
+    "spr_susieb_attackready": "Susie attack pose",
+    "spr_susieb_defend": "Susie defense animation",
+    "spr_susieb_hurt": "Susie hit feedback",
+    "spr_susieb_victory": "Susie victory animation"
+  },
+  "fonts": ["fnt_main", "fnt_mainbig"],
+  "sounds": ["snd_menumove", "snd_select", "snd_hurt1", "snd_graze"],
+  "music": "mus/battle.ogg",
+  "edits": "No imported or generated replacement artwork. Sprites are referenced from the existing archive, with runtime tinting/scaling/mirroring. Character animations are display-only; collision still uses the PvP prototype's circular hitboxes."
+}

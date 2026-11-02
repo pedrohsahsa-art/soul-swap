@@ -2,7 +2,13 @@
 
 Registro da validação completa da primeira release. A versão `0.8.0-test.2` troca a origem da música para `mus/joker.ogg`, preservando o gameplay e o protocolo 0.8.0.
 
-## Atualização test.4 — latência
+## Atualização test.5 — ataques
+
+95 testes de gameplay/rede, 2 de configuração e 4 de distribuição passaram. Regressões cobrem consumo de todos os tipos ativos durante invulnerabilidade, dano único, sincronização da remoção, buffer de clique sem vazamento por pausa/saída da arena, seleção dos sete ataques e rejeição dos três retirados. Os testes antigos de padrões internos continuam como regressão técnica; somente sete IDs são selecionáveis, formando 21 duplas.
+
+Instalação limpa compilada e reaberta. Dois runners reais: 621 ticks no host, 620 no cliente, 3 trocas e 130 de dano; timeout após encerramento do host passou. As sete prévias abriram sem erro; menu, Cometa e Costura foram inspecionados visualmente em 640×480. Equilíbrio e sensação de resposta precisam de avaliação humana entre PCs.
+
+## Histórico test.4
 
 Teste simulado com 13 pacotes de movimento acumulados: inversão de direção aplicada após 13 ticks antes e 1 tick depois (433 ms versus 33 ms a 30 FPS). Testes confirmam preservação ordenada das ações e rejeição de respostas de ping antigas/duplicadas. 92 testes de gameplay/rede, 2 de configuração e 4 de pacote passaram. Instalação limpa compilada e reaberta; teste com dois runners reais concluiu 621 ticks sincronizados, 3 trocas e 100 de dano, incluindo timeout do anfitrião. Captura do cliente: 30 FPS, ping dedicado 33 ms, REDE 30/s. Estes resultados não medem o computador ou a conexão do amigo.
 

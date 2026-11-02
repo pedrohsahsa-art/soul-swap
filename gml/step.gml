@@ -103,12 +103,13 @@ if (phase == "plan") {
                 edit_slot = _slot;
                 active_slot = _slot;
                 pattern = loadouts[attacker][_slot];
-                selection_page = floor(pattern / 6);
+                selection_page = floor(attack_index(pattern) / 6);
             }
         }
     }
     if (input.wheel != 0) {
-        select_attack((loadouts[attacker][edit_slot] + input.wheel + attack_count) mod attack_count);
+        var _count = array_length(available_attacks);
+        select_attack(available_attacks[(attack_index(loadouts[attacker][edit_slot]) + input.wheel + _count) mod _count]);
         play_sfx(snd_menumove);
     }
     if (input.fire_pressed) {
@@ -116,8 +117,8 @@ if (phase == "plan") {
         for (var _i = 0; _i < 6; _i++) {
             if (pointer_in(40 + (_i mod 2) * 290, 182 + floor(_i / 2) * 43, 270, 38)) {
                 var _choice = selection_page * 6 + _i;
-                if (_choice >= attack_count) continue;
-                select_attack(_choice);
+                if (_choice >= array_length(available_attacks)) continue;
+                select_attack(available_attacks[_choice]);
                 play_sfx(snd_menumove);
             }
         }
@@ -184,12 +185,19 @@ if (phase == "dodge") {
     if (shot_cooldown > 0) shot_cooldown--;
     if (strategy_cooldown > 0) strategy_cooldown--;
     var _inside = pointer_in(arena_left, arena_top, arena_right - arena_left, arena_bottom - arena_top);
+    if (fire_buffer > 0) fire_buffer--;
+    if (!_inside) fire_buffer = 0;
+    if (_inside && input.fire_pressed && pattern < 7) fire_buffer = 4;
     var _required_energy = pattern == 2 || pattern == 3 || pattern >= 7 ? energy_cost * 2 : energy_cost;
     if (energy < _required_energy) recovering = true;
     if (!input.fire || recovering) energy = min(energy_max, energy + energy_regen);
     if (recovering && energy >= energy_resume) recovering = false;
     if (pattern >= 7) step_creative_input(_inside);
-    else if (_inside && input.fire) fire_burst();
+    else if (_inside && (input.fire || fire_buffer > 0)) {
+        var _before = shots_fired;
+        fire_burst();
+        if (shots_fired > _before) fire_buffer = 0;
+    }
     if (input.special_pressed) {
         special_notice = "";
         if (!_inside) special_notice = "MIRE DENTRO DA ARENA";

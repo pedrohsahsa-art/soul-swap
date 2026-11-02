@@ -44,7 +44,7 @@ perf_fps = 0;
 perf_hz = 0;
 net_verified_states = 0;
 net_defender_focus = false;
-net_protocol = "SOULSWAP-LAN-2/" + mod_version;
+net_protocol = "SOULSWAP-LAN-3/" + mod_version;
 // Whitelist: never overwrite methods, socket handles, local preferences or local UI from a packet.
 net_fields = ["phase", "phase_ticks", "attacker", "defender", "opening_player", "turn_number", "turn_id",
     "players", "loadouts", "active_slot", "edit_slot", "pattern", "selection_page", "switch_timer",

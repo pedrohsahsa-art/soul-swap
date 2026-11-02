@@ -1,29 +1,14 @@
-# SOUL / SWAP 0.8.0-test.4 — latência dos controles
+# SOUL / SWAP 0.8.0-test.5 — ataques e resposta
 
-Atualização do PvP local/LAN de DELTARUNE.
+- Sete ataques selecionáveis: Rajada, Cometa, Muralha, Ricochete, Costura, Bumerangue e Jardim. Pulso, Órbita e Pinça saem da seleção.
+- Contato consome projéteis também durante invulnerabilidade, sem dano adicional; a remoção é sincronizada com o convidado.
+- Cometa ganha travamento de rota pelo cursor no lugar da mina radial redundante.
+- Leque de Rajada mais preciso, Ricochete com ângulos mais abertos, Muralha com recarga menor, Costura com inversão rápida, retorno de Bumerangue com recarga curta e sementes de Jardim amadurecendo antes.
+- Troca de ataque reduzida de 0,6 para 0,2 s, recuperação de energia mais rápida e buffer de clique de quatro ticks nos ataques diretos.
+- FPS, ping dedicado, taxa de rede e THE WORLD REVOLVING mantidos.
 
-- Controles contínuos antigos deixam de ficar na fila. No teste com 13 pacotes acumulados, uma inversão de direção passou de 13 para 1 tick do anfitrião (433 para 33 ms a 30 FPS).
-- Cliques, solturas, confirmações, evasão, roda e pausa continuam sendo consumidos em ordem, uma vez.
-- Ping dedicado de ida e volta, independente do envio de estados; respostas antigas ou duplicadas são ignoradas.
-- **Ambos devem atualizar:** protocolo LAN 2, incompatível com test.3 e anteriores.
+**Ambos devem atualizar:** protocolo LAN 3, incompatível com test.4 e anteriores. O jogo mantém simulação a 30 FPS e não possui predição no cliente.
 
-- FPS locais, ping de ida e volta e taxa de estados de rede visíveis na tela, nos dois PCs.
-- Janela de estados em trânsito ampliada de 2 para 8, ainda limitada para impedir acúmulo indefinido.
-- Teste simulado com 100 ms de ida e volta: taxa recebida passou de 20 para 30 estados/s. Isso corrige um gargalo de rede; não comprova a causa de FPS baixo no computador do convidado.
+**Instalação:** Windows 10/11 x64, DELTARUNE Steam compatível, 1 GB livre e internet na primeira instalação. Baixe `SOUL-SWAP-0.8.0-test.5.zip`, extraia em uma pasta nova e abra `Install.cmd`. Para atualizar na mesma pasta, feche o jogo, substitua os arquivos do pacote e execute `Install.cmd -Reinstall`.
 
-- Música alterada para **THE WORLD REVOLVING**, do Capítulo 1.
-- Instalador e build usam `mus/joker.ogg` da instalação própria do jogador, com conferência de SHA-256 no instalador.
-- Gameplay continua na versão **0.8.0**; protocolo LAN passa para **2**.
-
-- Conexão para dois jogadores por IPv4 + porta TCP (padrão 6510).
-- Dez ataques e dois slots por jogador, com papéis alternados.
-- Instalador Windows que usa o jogo instalado, baixa a ferramenta oficial e confere compatibilidade.
-- Tutorial, README em português, solução de problemas e modelo de relato.
-
-**Instalar:** baixe `SOUL-SWAP-0.8.0-test.4.zip`, extraia fora da pasta do jogo e abra `Install.cmd`. Depois abra `Start_LAN.cmd` ou `Start_Local_PvP.cmd`.
-
-**Atualizar da test.1:** feche o jogo, extraia esta release em uma pasta nova e execute `Install.cmd`. Se substituir os arquivos do pacote na mesma pasta, execute `Install.cmd -Reinstall` para aplicar a nova música.
-
-**Requisitos:** Windows 10/11 x64, DELTARUNE Steam na build compatível descrita no README, aproximadamente 1 GB livre e internet na primeira instalação. Não exige Python/Node/Git para jogar.
-
-**Limites do teste:** a LAN foi verificada com dois runners reais no mesmo PC; o objetivo desta pré-release é coletar testes entre PCs físicos. O cliente não faz predição/interpolação. Os dois jogadores devem usar esta mesma release.
+**Validação:** 101 testes automatizados. O equilíbrio e a sensação de resposta entre dois PCs ainda precisam do retorno dos testers.

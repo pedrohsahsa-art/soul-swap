@@ -61,8 +61,9 @@ if (phase == "lobby" || phase == "result" || phase == "handoff") {
         ui_button(_sx, 143, 270, 30, string(_slot + 1) + ": " + pattern_names[loadouts[attacker][_slot]], _colors[attacker], edit_slot == _slot);
     }
     for (var _i = 0; _i < 6; _i++) {
-        var _choice = selection_page * 6 + _i;
-        if (_choice >= attack_count) continue;
+        var _index = selection_page * 6 + _i;
+        if (_index >= array_length(available_attacks)) continue;
+        var _choice = available_attacks[_index];
         var _xx = 40 + (_i mod 2) * 290;
         var _yy = 182 + floor(_i / 2) * 43;
         ui_button(_xx, _yy, 270, 38, pattern_names[_choice], _colors[attacker], _choice == loadouts[attacker][edit_slot]);

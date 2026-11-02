@@ -34,6 +34,12 @@ players = [
 pattern_names = ["RAJADA", "COMETA", "MURALHA", "PULSO", "RICOCHETE", "ORBITA", "PINCA", "COSTURA", "BUMERANGUE", "JARDIM"];
 pattern_hints = ["Direito: emissor extra", "Direito: mina radial", "Direito: arraste muralha", "Direito: pulso atrasado", "Direito: arraste refletor", "Direito: inverta a orbita", "Direito: marque cruzamento", "Esq: desenhe / Dir: inverta", "Esq: carregue / Dir: retorne", "Esq: plante / Dir: floresca"];
 attack_count = array_length(pattern_names);
+// Stable internal artwork IDs; only this curated roster is selectable.
+available_attacks = [0, 1, 2, 4, 7, 8, 9];
+attack_index = function(_id) {
+    for (var _i = 0; _i < array_length(available_attacks); _i++) if (available_attacks[_i] == _id) return _i;
+    return -1;
+};
 selection_page = 0;
 qa_preview = false;
 help_open = false;
@@ -61,6 +67,15 @@ help_lines = [
 ];
 attack_left = ["Segure: leques alternados de cinco tiros.", "Segure: tres cometas guiados por pouco tempo.", "Segure: parede com passagem na linha da mira.", "Segure: dois aneis; a abertura muda entre eles.", "Segure: tres tiros, cada um rebate duas vezes.", "Segure: oito tiros orbitam a mira e saem em serie.", "Segure: leques cruzados de bordas opostas.", "Desenhe e solte: costura dupla e espinhos laterais.", "Carregue e solte: 3 laminas; carga alta lanca 5.", "Segure: plante ate tres sementes; espere o verde."];
 attack_right = ["Clique: emissor extra dispara leques na borda.", "Clique: mina radial em duas ondas alternadas.", "Arraste: duas paredes opostas, passagens deslocadas.", "Clique: dois aneis com aberturas alternadas.", "Arraste e solte para colocar um refletor.", "Clique para inverter o giro em formacao.", "Clique: cruzamento em dois tempos, fixo na mira.", "Clique para inverter a ordem da proxima costura.", "Clique: antecipe a volta PELO CURSOR, depois origem.", "Clique: sementes verdes florescem em duas ondas."];
+attack_left[0] = "Segure: leque curto para pressionar a mira.";
+attack_left[1] = "Segure: cometas corrigem a rota por pouco tempo.";
+attack_left[2] = "Segure: parede com passagem na linha da mira.";
+attack_left[4] = "Segure: tiros rebatem duas vezes; controle os cantos.";
+attack_left[7] = "Desenhe e solte: bloqueie uma rota com espinhos.";
+attack_left[8] = "Solte: laminas de ida e volta; carregar amplia alcance.";
+attack_left[9] = "Plante ate tres sementes para preparar uma emboscada.";
+attack_right[1] = "Clique: cometas em voo travam rumo ao cursor.";
+pattern_hints[1] = "Direito: trave a rota dos cometas";
 stroke = [];
 stroke_length = 0;
 stitch_reverse = false;
@@ -117,6 +132,7 @@ input = { fire: false, fire_pressed: false, fire_released: false, special: false
     special_released: false, ready: false, ready_held: false, focus: false,
     move_x: 0, move_y: 0, wheel: 0, pause: false, mute: false, fullscreen: false, evade: false };
 shot_cooldown = 0;
+fire_buffer = 0;
 shots_fired = 0;
 turn_damage = 0;
 bullets = [];
@@ -284,12 +300,13 @@ add_bullet = function(_x, _y, _vx, _vy, _art = -1) {
 };
 
 select_attack = function(_choice) {
+    if (attack_index(_choice) < 0) return;
     var _other = 1 - edit_slot;
     if (loadouts[attacker][_other] == _choice) loadouts[attacker][_other] = loadouts[attacker][edit_slot];
     loadouts[attacker][edit_slot] = _choice;
     pattern = _choice;
     active_slot = edit_slot;
-    selection_page = floor(_choice / 6);
+    selection_page = floor(attack_index(_choice) / 6);
 };
 
 emit_ring = function(_x, _y, _gap_angle, _delay = 24) {
@@ -344,7 +361,7 @@ fire_burst = function() {
     var _dir = point_direction(_edge[0], _edge[1], target_x, target_y);
     if (pattern == 2) {
         emit_wall(target_x, target_y, _edge[1] == arena_top + 5 || _edge[1] == arena_bottom - 5);
-        shot_cooldown = 30;
+        shot_cooldown = 24;
         play_sfx(snd_menumove);
         return;
     }
@@ -371,7 +388,7 @@ fire_burst = function() {
     var _count = pattern == 0 ? 5 : (pattern == 5 ? 8 : 3);
     for (var _n = 0; _n < _count; _n++) {
         var _fan = _n - (_count - 1) / 2;
-        var _spread = pattern == 4 ? 22 : 12;
+        var _spread = pattern == 4 ? 28 : (pattern == 0 ? 9 : 12);
         var _heading = _dir + _fan * _spread + (pattern == 0 ? ((shots_fired mod 2) * 2 - 1) * 5 : 0);
         var _before = array_length(bullets);
         var _sx = _edge[0];
@@ -394,7 +411,8 @@ fire_burst = function() {
             _orb.by = _orb.oy + lengthdir_y(42, _orb.angle);
         }
     }
-    if (pattern == 1 || pattern == 4) shot_cooldown = 18;
+    if (pattern == 1) shot_cooldown = 15;
+    if (pattern == 4) shot_cooldown = 18;
     if (pattern == 5) shot_cooldown = 24;
     play_sfx(snd_menumove);
 };
@@ -429,7 +447,23 @@ place_strategy = function(_x, _y, _horizontal) {
             _activated = _sequence > 0;
             if (!_activated) special_notice = "AGUARDE SEMENTES MADURAS";
         }
-        if (_activated) { strategy_cooldown = strategy_cooldown_ticks; play_sfx(snd_select); }
+        if (_activated) { strategy_cooldown = pattern == 7 ? 6 : (pattern == 8 ? 12 : 30); play_sfx(snd_select); }
+        return;
+    }
+    if (pattern == 1) {
+        var _locked = false;
+        for (var _i = 0; _i < array_length(bullets); _i++) {
+            var _b = bullets[_i];
+            if (_b.art != 1 || !_b.guided || _b.age <= 0) continue;
+            var _heading = point_direction(_b.bx, _b.by, _x, _y);
+            _b.vx = lengthdir_x(projectile_speed, _heading);
+            _b.vy = lengthdir_y(projectile_speed, _heading);
+            _b.guided = false;
+            _b.age = -projectile_warning_ticks;
+            _locked = true;
+        }
+        special_notice = _locked ? "ROTA TRAVADA NA MIRA" : "LANCE COMETAS PRIMEIRO";
+        if (_locked) { strategy_cooldown = 30; play_sfx(snd_select); }
         return;
     }
     if (pattern == 5) {
@@ -591,7 +625,7 @@ step_bullets = function() {
                     _b.bounces--;
                 }
             }
-            if (_b.owner != defender && _victim.inv <= 0) {
+            if (_b.owner != defender) {
                 // Swept relative motion: both the SOUL and projectile moved this tick.
                 var _rx = _b.px - soul_old_x;
                 var _ry = _b.py - soul_old_y;
@@ -603,6 +637,9 @@ step_bullets = function() {
                 var _hy = _ry + _vy * _t;
                 var _r = soul_radius + projectile_radius;
                 if (_hx * _hx + _hy * _hy <= _r * _r) {
+                    // Contact consumes every live projectile, including during damage immunity.
+                    _b.alive = false;
+                    if (_victim.inv <= 0) {
                     var _damage = min(hit_damage, _victim.hp);
                     _victim.hp = max(0, _victim.hp - _damage);
                     _victim.inv = invulnerability_ticks;
@@ -615,7 +652,8 @@ step_bullets = function() {
                     hit_amount = _damage;
                     _b.alive = false;
                     play_sfx(snd_hurt1);
-                } else if (!_b.grazed && _hx * _hx + _hy * _hy <= graze_radius * graze_radius) {
+                    }
+                } else if (_victim.inv <= 0 && !_b.grazed && _hx * _hx + _hy * _hy <= graze_radius * graze_radius) {
                     _b.grazed = true;
                     turn_grazes++;
                     match_grazes[defender]++;
@@ -755,6 +793,7 @@ draw_bounce_preview = function(_x, _y, _color) {
 };
 
 cancel_gesture = function() {
+    fire_buffer = 0;
     stroke = [];
     stroke_length = 0;
     charge_ticks = 0;
@@ -778,7 +817,7 @@ pay_creative_shot = function() {
     if (energy < energy_cost * 2) recovering = true;
     shots_fired++;
     shot_flash = 5;
-    shot_cooldown = 24;
+    shot_cooldown = 18;
     play_sfx(snd_menumove);
 };
 
@@ -839,7 +878,7 @@ step_creative_input = function(_inside) {
                     _walked += _len;
                 }
                 pay_creative_shot();
-                shot_cooldown = 30;
+                shot_cooldown = 24;
             }
             cancel_gesture();
         }
@@ -870,7 +909,7 @@ step_creative_input = function(_inside) {
         var _dy = target_y - _edge[1];
         var _travel = max(1, ceil(sqrt(_dx * _dx + _dy * _dy) / 4));
         array_push(seeds, { sx: _edge[0], sy: _edge[1], tx: target_x, ty: target_y,
-            vx: _dx / _travel, vy: _dy / _travel, travel: _travel, mature: 18,
+            vx: _dx / _travel, vy: _dy / _travel, travel: _travel, mature: 12,
             fuse: -1, bloom: 0, life: 240, heading: point_direction(_edge[0], _edge[1], target_x, target_y), round_id: turn_id });
         pay_creative_shot();
     }

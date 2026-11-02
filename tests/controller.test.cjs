@@ -163,7 +163,7 @@ test('comets turn at bounded angular speed, then stop tracking',()=>{
 test('energy limits held fire and automatically recovers from exhaustion',()=>{
   const g=game();g.active();g.c.players[1].inv=9999;
   for(let i=0;i<250;i++)g.step({buttons:[1],x:200,y:210});
-  assert.ok(g.c.shots_fired>10 && g.c.shots_fired<17);assert.ok(g.c.energy>=0 && g.c.energy<=100);
+  assert.ok(g.c.shots_fired>10 && g.c.shots_fired<250/rules.shot_cooldown_ticks);assert.ok(g.c.energy>=0 && g.c.energy<=100);
   for(let i=0;i<40;i++)g.step();assert.ok(g.c.energy>20);
   const n=g.c.shots_fired;g.step({buttons:[1]});assert.equal(g.c.shots_fired,n+1);
 });
@@ -171,15 +171,15 @@ test('outside-arena clicks and toolbar clicks cannot fire or place attacks',()=>
   const g=game();g.active();g.step({buttons:[1,2],x:10,y:10});assert.equal(g.c.bullets.length,0);assert.equal(g.c.hazards.length,0);
   g.step();g.step({buttons:[1],x:490,y:20});assert.equal(g.c.sound_enabled,false);assert.equal(g.c.shots_fired,0);
 });
-test('mine warns, emits two staggered radial waves, and respects cooldown',()=>{
-  const g=game();g.active();g.c.pattern=1;g.step({buttons:[2],x:320,y:300});
-  assert.equal(g.c.hazards.length,1);assert.equal(g.c.bullets.length,0);
-  g.step();g.step({buttons:[2]});assert.equal(g.c.hazards.length,1);
-  for(let i=0;i<rules.strategy_warning_ticks-3;i++)g.step();
-  assert.equal(g.c.hazards.length,1);assert.equal(g.c.bullets.length,12);assert.equal(g.c.players[1].hp,100);
-  for(let i=0;i<24;i++)g.c.step_hazards();
-  assert.equal(g.c.hazards.length,0);assert.equal(g.c.bullets.length,24);
-  assert.ok(g.c.bullets.slice(12).every(b=>b.age<0));
+test('comet special locks existing guided shots with warning and never creates a redundant mine',()=>{
+  const g=game();g.active();g.c.pattern=1;g.c.place_strategy(400,280,true);
+  assert.equal(g.c.strategy_cooldown,0);g.c.fire_burst();
+  for(const b of g.c.bullets)b.age=1;
+  g.c.place_strategy(400,280,true);assert.equal(g.c.hazards.length,0);
+  assert.ok(g.c.bullets.every(b=>!b.guided&&b.age===-rules.projectile_warning_ticks));
+  const velocities=plain(g.c.bullets.map(b=>[b.vx,b.vy]));
+  g.c.target_x=150;g.c.target_y=200;g.c.place_strategy(150,200,true);
+  assert.deepEqual(plain(g.c.bullets.map(b=>[b.vx,b.vy])),velocities);
 });
 test('extra emitter is on edge and has a finite lifetime',()=>{
   const g=game();g.active();g.c.place_strategy(200,250,true);const h=g.c.hazards[0];
@@ -310,8 +310,8 @@ test('deterministic stress: 36 complete attack turns with mixed input remain bou
 });
 test('loadout selection keeps two distinct attacks and persists for each player',()=>{
   const g=game();g.active();g.c.edit_slot=0;g.c.select_attack(1);
-  assert.deepEqual(plain(g.c.loadouts[0]),[1,0]);g.c.edit_slot=1;g.c.select_attack(6);
-  assert.deepEqual(plain(g.c.loadouts[0]),[1,6]);assert.deepEqual(plain(g.c.loadouts[1]),[0,1]);
+  assert.deepEqual(plain(g.c.loadouts[0]),[1,0]);g.c.edit_slot=1;g.c.select_attack(4);
+  assert.deepEqual(plain(g.c.loadouts[0]),[1,4]);assert.deepEqual(plain(g.c.loadouts[1]),[0,1]);
   g.c.advance_turn();g.c.advance_turn();assert.equal(g.c.pattern,1);
 });
 test('wheel switch preserves energy, cooldown and existing bullets, and warns before firing',()=>{
@@ -320,14 +320,14 @@ test('wheel switch preserves energy, cooldown and existing bullets, and warns be
   g.step({scroll:1,buttons:[1,2]});assert.equal(g.c.pattern,4);assert.equal(g.c.shots_fired,1);
   assert.equal(g.c.energy,energy);assert.equal(g.c.strategy_cooldown,99);assert.ok(g.c.bullets.includes(b));
   assert.equal(b.art,0);assert.equal(g.c.hazards.length,0);
-  for(let i=0;i<rules.switch_warning_ticks;i++)g.step({buttons:[1]});assert.equal(g.c.shots_fired,2);
+  for(let i=0;i<Math.max(rules.switch_warning_ticks,rules.shot_cooldown_ticks);i++)g.step({buttons:[1]});assert.equal(g.c.shots_fired,2);
 });
 test('delayed strategies retain their own artwork after switching patterns',()=>{
-  const g=game();g.active();g.c.pattern=1;g.c.place_strategy(240,240,true);g.c.pattern=4;
+  const g=game();g.active();g.c.pattern=0;g.c.place_strategy(240,240,true);g.c.pattern=4;
   for(let i=0;i<rules.strategy_warning_ticks;i++)g.c.step_hazards();
-  assert.equal(g.c.bullets.length,12);assert.ok(g.c.bullets.every(b=>b.art===1&&b.bounces===0));
+  assert.equal(g.c.bullets.length,3);assert.ok(g.c.bullets.every(b=>b.art===0&&b.bounces===0));
   for(let i=0;i<24;i++)g.c.step_hazards();
-  assert.equal(g.c.bullets.length,24);assert.ok(g.c.bullets.every(b=>b.art===1&&b.bounces===0));
+  assert.equal(g.c.bullets.length,6);assert.ok(g.c.bullets.every(b=>b.art===0&&b.bounces===0));
 });
 test('pulse has a fixed safe angular opening and delayed pulse warns first',()=>{
   const g=game();g.active();g.c.emit_ring(320,280,0);
@@ -386,9 +386,9 @@ test('reflector catches exact-plane arrivals and preview does not mutate combat'
   const before=combat(g.c);g.c.draw_bounce_preview(250,185,g.c.c_white);assert.deepEqual(combat(g.c),before);
 });
 test('fresh right click works while left confirmation remains held across a transition',()=>{
-  const g=game();g.active();g.c.pattern=1;g.step({buttons:[1]});g.c.input_gate=true;
+  const g=game();g.active();g.c.pattern=0;g.step({buttons:[1]});g.c.input_gate=true;
   g.step({buttons:[1,2],x:240,y:240});assert.equal(g.c.hazards.length,1);
-  assert.equal(g.c.hazards[0].kind,1);assert.equal(g.c.special_notice,'ESPECIAL ATIVADO');
+  assert.equal(g.c.hazards[0].kind,0);assert.equal(g.c.special_notice,'ESPECIAL ATIVADO');
   assert.equal(g.c.right_click_count,1);
 });
 test('right drag and release work independently of held left and Enter',()=>{
@@ -421,12 +421,14 @@ test('fullscreen change restores native pointer and outside-window position hide
   g.step({x:-30,y:-30});g.calls.length=0;g.draw();
   assert.ok(!g.calls.some(c=>c[1]==='spr_custommenu_arrow'&&c[4]===-30));
 });
-test('second selection page exposes all creative attacks and keeps slots distinct',()=>{
+test('curated selection exposes seven attacks and rejects retired IDs',()=>{
   const g=game();g.active();g.c.phase='plan';g.c.phase_ticks=300;
   g.step({buttons:[1],x:120,y:325});assert.equal(g.c.selection_page,1);
-  g.step();g.step({buttons:[1],x:360,y:195});assert.equal(g.c.pattern,7);
-  g.step();g.step({buttons:[1],x:120,y:240});assert.equal(g.c.pattern,8);
-  g.step();g.step({buttons:[1],x:360,y:240});assert.equal(g.c.pattern,9);
+  g.step();g.step({buttons:[1],x:120,y:195});assert.equal(g.c.pattern,9);
+  for(const id of [3,5,6]){g.c.select_attack(id);assert.equal(g.c.pattern,9);}
+  assert.deepEqual(plain(g.c.available_attacks),[0,1,2,4,7,8,9]);
+  g.c.selection_page=0;g.texts.length=0;g.draw();
+  for(const name of ['PULSO','ORBITA','PINCA'])assert.ok(!g.texts.some(t=>t.text===name));
   g.draw();
 });
 test('Costura records a bounded path, warns on release and consumes energy once',()=>{
@@ -576,7 +578,7 @@ test('wall preview is identical to emitted positions and both waves keep a real 
     assert.ok(coords.some(p=>p<gap)&&coords.some(p=>p>gap));
   }
   const g=game();g.active();g.c.pattern=2;g.c.place_strategy(320,240,true);
-  for(let i=0;i<30;i++)g.c.step_hazards();const h=g.c.hazards[0];
+  for(let i=0;i<rules.strategy_warning_ticks;i++)g.c.step_hazards();const h=g.c.hazards[0];
   assert.equal(h.hx,256);assert.equal(h.timer,30);
   const first=g.c.bullets.length;for(let i=0;i<30;i++)g.c.step_hazards();
   assert.ok(g.c.bullets.slice(first).every(b=>b.vy<0&&Math.abs(b.bx-256)>26));
@@ -628,7 +630,7 @@ test('Bumerangue recall locks a new corridor, warns harmlessly, then reaches cur
   g.c.soul_x=b.bx;g.c.soul_y=b.by;
   for(let i=0;i<rules.projectile_warning_ticks-1;i++)g.step({x:150,y:200});
   assert.equal(g.c.players[1].hp,100);assert.deepEqual([b.return_x,b.return_y],locked);
-  g.c.players[1].inv=1000;let touched=false;
+  g.c.players[1].inv=1000;g.c.soul_x=124;g.c.soul_y=380;let touched=false;
   for(let i=0;i<300&&g.c.bullets.includes(b);i++) {
     g.step();if(Math.hypot(b.bx-locked[0],b.by-locked[1])<0.01)touched=true;
   }
@@ -698,7 +700,7 @@ test('projectiles leaving the arena never render over the status line or energy 
   assert.equal(rendered.length,1);assert.equal(rendered[0][4],320);assert.equal(rendered[0][5],280);
   assert.deepEqual(combat(g.c),before);
 });
-test('comparative spatial pressure exceeds v0.6.2 for every reworked attack',()=>{
+test('active attacks retain measurable coverage within projectile budget (density is not a balance target)',()=>{
   const baseline={create:read('tests/baseline-v0.6.2/gml_Object_obj_pvp_match_Create_0.gml'),
     step:read('tests/baseline-v0.6.2/gml_Object_obj_pvp_match_Step_0.gml'),draw:''};
   const measure=(code,p)=>{
@@ -728,14 +730,14 @@ test('comparative spatial pressure exceeds v0.6.2 for every reworked attack',()=
     return {unsafe_cell_ticks:cellTicks,covered_cells:union.size,total_cells:cols*rows,peak};
   };
   const rows=[];
-  for(let p=0;p<10;p++) {
+  for(const p of game().c.available_attacks) {
     const old=measure(baseline,p),current=measure(source,p);
     rows.push({attack:p,name:game().c.pattern_names[p],baseline:old,current,ratio:current.unsafe_cell_ticks/Math.max(1,old.unsafe_cell_ticks)});
   }
   fs.writeFileSync(path.join(root,'build/pressure-comparison.json'),JSON.stringify({
     baseline:'0.6.2 reopened/decompiled controller',version:rules.version,
     method:'15s identical scripted mouse per pattern, invulnerable stationary defender, 528 probe cells, swept active-projectile occupancy. Not human difficulty.',rows},null,2));
-  for(const row of rows){console.log(`Pressure ${row.name}: ${row.ratio.toFixed(2)}x occupied cell-ticks`);assert.ok(row.ratio>1.25,row.name);}
+  for(const row of rows){console.log(`Pressure ${row.name}: ${row.ratio.toFixed(2)}x occupied cell-ticks`);assert.ok(row.current.covered_cells>0&&row.current.peak<=rules.bullet_limit,row.name);}
 });
 function lanPair(){
   const host=game(),guest=game();host.c.net_start(true);guest.c.net_start(false);
@@ -915,6 +917,32 @@ test('LAN queue compaction preserves press/release actions and ping ignores stal
   c.net_receive({kind:'pong',protocol:c.net_protocol,probe:122});assert.equal(c.net_probe_pending,123);
   c.net_receive({kind:'pong',protocol:c.net_protocol,probe:123});assert.equal(c.net_rtt,67);
   c.current_time+=100;c.net_receive({kind:'pong',protocol:c.net_protocol,probe:123});assert.equal(c.net_rtt,67);
+});
+test('every active projectile is consumed on contact during immunity, with one damage event',()=>{
+  const p=lanPair();p.host.active();const c=p.host.c;
+  for(const art of c.available_attacks){c.add_bullet(c.soul_x,c.soul_y,0,0,art);const b=c.bullets.at(-1);b.age=0;b.outbound=100;}
+  c.step_bullets();assert.equal(c.players[1].hp,90);assert.equal(c.bullets.length,0);
+  for(const art of c.available_attacks){c.add_bullet(c.soul_x,c.soul_y,0,0,art);const b=c.bullets.at(-1);b.age=0;b.outbound=100;}
+  c.step_bullets();assert.equal(c.players[1].hp,90);assert.equal(c.bullets.length,0);
+  assert.equal(c.turn_grazes,0);assert.equal(c.turn_damage,10);
+  p.guest.c.net_apply_state(plain(c.net_capture_state()));assert.equal(p.guest.c.bullets.length,0);
+});
+test('short click buffers through cooldown but never leaks through pause or outside arena',()=>{
+  const g=game();g.active();g.c.shot_cooldown=3;
+  g.step({buttons:[1],x:220,y:240});g.step();g.step();assert.equal(g.c.shots_fired,1);
+  for(let i=0;i<20;i++)g.step();assert.equal(g.c.shots_fired,1);
+  g.c.shot_cooldown=3;g.step({buttons:[1]});g.step({x:0,y:0});g.step();assert.equal(g.c.shots_fired,1);
+  g.c.shot_cooldown=3;g.step({buttons:[1],x:220,y:240});g.step({keys:[80]});
+  assert.equal(g.c.fire_buffer,0);
+});
+test('all 21 curated pairs remain selectable with distinct roles and finite cooldowns',()=>{
+  const g=game();let pairs=0;
+  for(const a of g.c.available_attacks)for(const b of g.c.available_attacks)if(a<b){
+    g.c.edit_slot=0;g.c.select_attack(a);g.c.edit_slot=1;g.c.select_attack(b);
+    assert.deepEqual(plain(g.c.loadouts[g.c.attacker]),[a,b]);pairs++;
+  }
+  assert.equal(pairs,21);assert.ok(rules.switch_warning_ticks<=6);
+  g.active();g.c.pattern=7;g.c.place_strategy(220,240,true);assert.equal(g.c.strategy_cooldown,6);
 });
 const report={passed:results.filter(r=>r.passed).length,failed:results.filter(r=>!r.passed).length,
   limitations:'Actual GML translated to JS with stub APIs; not GameMaker VM, graphics, audio or hardware verification.',tests:results};

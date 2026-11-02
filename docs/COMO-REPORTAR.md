@@ -13,7 +13,7 @@
 ## Modelo de relato
 
 ```text
-Versão do pacote: 0.8.0-test.1
+Versão do pacote: 0.8.0-test.2
 Windows dos dois PCs:
 Modo: local / LAN
 Papel de quem observou: anfitrião / convidado

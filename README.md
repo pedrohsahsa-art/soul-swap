@@ -1,8 +1,10 @@
 # SOUL / SWAP — DELTARUNE PvP local e LAN
 
-**Versão de testes: `0.8.0-test.1` · jogo/protocolo: `0.8.0` · Windows 64 bits**
+**Versão de testes: `0.8.0-test.2` · jogo/protocolo: `0.8.0` · Windows 64 bits**
 
 Mod não oficial para dois jogadores: um ataca com o mouse e o outro desvia com o teclado. Os papéis se alternam. Inclui dez ataques, seleção de dupla, tutorial no jogo e conexão LAN por **IPv4 + porta TCP**.
+
+A música é **THE WORLD REVOLVING**, do Capítulo 1 (`mus/joker.ogg` da instalação original, copiada como `battle.ogg` no mod).
 
 ## O que você precisa
 
@@ -25,7 +27,7 @@ Os hashes e nomes dos quatro arquivos aceitos estão em [`release/compatibility.
 
 ## Instalação — passo a passo
 
-1. Baixe **`SOUL-SWAP-0.8.0-test.1.zip`** recebido do autor ou disponível na seção **Releases** do repositório.
+1. Baixe **[SOUL-SWAP-0.8.0-test.2.zip](https://github.com/pedrohsahsa-art/soul-swap/releases/download/v0.8.0-test.2/SOUL-SWAP-0.8.0-test.2.zip)** na release do GitHub.
 2. Use **Extrair tudo**. Coloque a pasta em um local onde você possa gravar arquivos, por exemplo `Documentos\SOUL-SWAP`. **Não execute de dentro do ZIP nem extraia dentro da pasta original de DELTARUNE.**
 3. Abra **`Install.cmd`**. Não é necessário executar como administrador.
 4. O instalador procura o jogo nas bibliotecas Steam. Se não encontrar, selecione a pasta **DELTARUNE**, que contém `DELTARUNE.exe`, `chapter2_windows` e `mus`.

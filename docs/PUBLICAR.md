@@ -4,8 +4,8 @@
 
 Execute `python scripts/package.py`. Envie somente:
 
-- `dist/SOUL-SWAP-0.8.0-test.1.zip`
-- `dist/SOUL-SWAP-0.8.0-test.1.zip.sha256`
+- `dist/SOUL-SWAP-0.8.0-test.2.zip`
+- `dist/SOUL-SWAP-0.8.0-test.2.zip.sha256`
 
 O tester extrai o ZIP e abre `Install.cmd`. O instalador usa a instalação própria de DELTARUNE. O manifesto interno lista o SHA-256 de cada arquivo distribuído.
 
@@ -13,7 +13,7 @@ O tester extrai o ZIP e abre `Install.cmd`. O instalador usa a instalação pró
 
 1. Entre na sua conta e crie um repositório chamado, por exemplo, **soul-swap**.
 2. Extraia o ZIP em uma pasta nova. Use **Add file → Upload files** para enviar **o conteúdo interno da pasta SOUL-SWAP**, deixando `README.md` na raiz do repositório. Inclua `.github`, `.gitignore` e `.gitattributes` (nomes começando com ponto).
-3. Em **Releases → Draft a new release**, crie a tag **`v0.8.0-test.1`**, título **SOUL / SWAP 0.8.0 — teste LAN**, e marque **pre-release**.
+3. Em **Releases → Draft a new release**, crie a tag **`v0.8.0-test.2`**, título **SOUL / SWAP 0.8.0-test.2 — THE WORLD REVOLVING**, e marque **pre-release**.
 4. Anexe o ZIP e o `.sha256` acima. Use [RELEASE-NOTES.md](RELEASE-NOTES.md) como descrição.
 5. Envie o link da release aos testers. Eles precisam baixar o ZIP do pacote e seguir o README.
 
@@ -30,9 +30,9 @@ git commit -m "Prepare SOUL SWAP LAN tester release"
 git branch -M main
 gh repo create soul-swap --public --source . --remote origin --push
 python scripts/package.py
-gh release create v0.8.0-test.1 `
-  dist/SOUL-SWAP-0.8.0-test.1.zip `
-  dist/SOUL-SWAP-0.8.0-test.1.zip.sha256 `
+gh release create v0.8.0-test.2 `
+  dist/SOUL-SWAP-0.8.0-test.2.zip `
+  dist/SOUL-SWAP-0.8.0-test.2.zip.sha256 `
   --prerelease --title "SOUL SWAP 0.8.0 - teste LAN" --notes-file docs/RELEASE-NOTES.md
 ```
 

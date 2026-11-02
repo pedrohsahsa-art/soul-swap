@@ -23,6 +23,8 @@
   },
   "fonts": ["fnt_main", "fnt_mainbig"],
   "sounds": ["snd_menumove", "snd_select", "snd_hurt1", "snd_graze"],
-  "music": "mus/battle.ogg",
+  "music": "mus/joker.ogg",
+  "music_title": "THE WORLD REVOLVING",
+  "music_runtime_file": "battle.ogg",
   "edits": "No imported or generated replacement artwork. Sprites are referenced from the existing archive, with runtime tinting/scaling/mirroring. Character animations are display-only; collision still uses the PvP prototype's circular hitboxes."
 }

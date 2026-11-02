@@ -1,4 +1,10 @@
-# Validação — 0.8.0-test.1
+# Validação de referência — 0.8.0-test.1
+
+Registro da validação completa da primeira release. A versão `0.8.0-test.2` troca a origem da música para `mus/joker.ogg`, preservando o gameplay e o protocolo 0.8.0.
+
+## Atualização test.2
+
+Instalação a partir de ZIP extraído em uma pasta nova concluída no Windows PowerShell 5.1, usando o ZIP oficial da ferramenta já em cache. A compilação e a reabertura dos seis eventos passaram; os arquivos originais foram conferidos. O `battle.ogg` instalado corresponde exatamente a `mus/joker.ogg` (**THE WORLD REVOLVING**), SHA-256 `59aa09ed117bb057112befa4f740143e207d8f8d8a7d03e5b0f37f44240fe74d`.
 
 ## Testes automatizados
 
@@ -33,4 +39,4 @@ Testada a partir do ZIP extraído em uma pasta nova, fora da árvore de desenvol
 - Dois computadores físicos, redes Wi-Fi distintas e configurações de firewall dos testers.
 - Avaliação humana da resposta do cliente sob latência.
 - Instalação em outras máquinas Windows 10/11; outras builds do jogo não são suportadas por este pacote.
-- Workflows preparados para GitHub Actions, ainda não executados no GitHub. Nenhum repositório remoto ou release foi publicado nesta preparação.
+- A release test.1 foi publicada e os testes passaram no [GitHub Actions](https://github.com/pedrohsahsa-art/soul-swap/actions/runs/41326239909).

@@ -1,12 +1,12 @@
 {
-  "package_version": "0.8.0-test.1",
+  "package_version": "0.8.0-test.2",
   "game_version": "0.8.0",
   "platform": "Windows x64 / Steam / chapter2_windows",
   "files": {
     "chapter2_windows/data.win": "047c5ab003e3e017a709c02757e119c81e0327760169512110fd276b19241e68",
     "DELTARUNE.exe": "b882cc1879ad8f24c63fa6e4f47a8fef9a01065ee61ad6220beed9932b04e7ed",
     "chapter2_windows/audiogroup1.dat": "560f46eca4b88d1273e5abb31aee65733e71bf39105b5283025d9e18b6905179",
-    "mus/battle.ogg": "888c10611589bf38d540a472dedb43e25baed165fdcc77ff39fec37beeab3cd2"
+    "mus/joker.ogg": "59aa09ed117bb057112befa4f740143e207d8f8d8a7d03e5b0f37f44240fe74d"
   },
   "tool": {
     "version": "0.9.2.0",

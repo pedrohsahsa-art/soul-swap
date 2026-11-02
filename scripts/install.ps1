@@ -130,7 +130,8 @@ try {
         Copy-Item -LiteralPath $patched -Destination (Join-Path $staged 'data.win')
         Copy-Item -LiteralPath (Join-Path $game 'DELTARUNE.exe') -Destination (Join-Path $staged 'DELTARUNE_Local_PvP.exe')
         Copy-Item -LiteralPath (Join-Path $game 'chapter2_windows\audiogroup1.dat') -Destination $staged
-        Copy-Item -LiteralPath (Join-Path $game 'mus\battle.ogg') -Destination $staged
+        # Keep the runtime filename; use THE WORLD REVOLVING from Chapter 1.
+        Copy-Item -LiteralPath (Join-Path $game 'mus\joker.ogg') -Destination (Join-Path $staged 'battle.ogg')
         [IO.File]::WriteAllText((Join-Path $staged 'options.ini'),"[Windows]`nSleepMargin=30`nUsex64=True`n")
         foreach ($file in $config.files.PSObject.Properties) {
             if ((FileHash (Join-Path $game $file.Name)) -ne $file.Value) { throw 'Arquivos do jogo mudaram durante a instalacao.' }

@@ -112,7 +112,8 @@ def main():
     # Only the runner, this new archive and the embedded sound bank are needed by this arena.
     shutil.copy2(runner, play / "DELTARUNE_Local_PvP.exe")
     shutil.copy2(GAME / "chapter2_windows/audiogroup1.dat", play / "audiogroup1.dat")
-    shutil.copy2(GAME / "mus/battle.ogg", play / "battle.ogg")
+    # The controller streams battle.ogg; source THE WORLD REVOLVING from Chapter 1.
+    shutil.copy2(GAME / "mus/joker.ogg", play / "battle.ogg")
     shutil.copy2(patched, target)
     (play / "options.ini").write_text("[Windows]\nSleepMargin=30\nUsex64=True\n", encoding="ascii")
     if digest(source) != SOURCE_HASH or digest(runner) != RUNNER_HASH:

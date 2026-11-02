@@ -2,7 +2,16 @@
 
 Registro da validação completa da primeira release. A versão `0.8.0-test.2` troca a origem da música para `mus/joker.ogg`, preservando o gameplay e o protocolo 0.8.0.
 
-## Atualização test.2
+## Atualização test.3 — desempenho LAN
+
+- 90 testes de gameplay/rede, 2 de configuração e 4 de distribuição passaram.
+- Simulação determinística de 100 ms de RTT, com 30 ticks/s: antes, 20 estados/s recebidos; depois, 30 estados/s. Medição do transporte simulado, não de CPU/GPU do GameMaker.
+- Janela limitada a oito estados; o teste de convidado parado confirma limite de fila, pausa e timeout.
+- Instalação limpa compilada e reaberta com sucesso. Dois runners reais passaram: 621 ticks sincronizados, 3 trocas, 130 de dano acumulado e detecção de anfitrião encerrado.
+- Captura do convidado exibiu 30 FPS, ping 34 ms e REDE 30/s. HUD inspecionado também em resolução nativa.
+- O PC do amigo não foi perfilado; queda de FPS nesse hardware continua a exigir verificação. A taxa do jogo permanece em 30 FPS, sem interpolação/predição no cliente.
+
+## Música — test.2
 
 Instalação a partir de ZIP extraído em uma pasta nova concluída no Windows PowerShell 5.1, usando o ZIP oficial da ferramenta já em cache. A compilação e a reabertura dos seis eventos passaram; os arquivos originais foram conferidos. O `battle.ogg` instalado corresponde exatamente a `mus/joker.ogg` (**THE WORLD REVOLVING**), SHA-256 `59aa09ed117bb057112befa4f740143e207d8f8d8a7d03e5b0f37f44240fe74d`.
 

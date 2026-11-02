@@ -837,7 +837,7 @@ test('LAN focus loss freezes both PCs, neutralizes gestures, and resume cannot f
 test('LAN snapshots have bounded backpressure and stopped peers time out without advancing play',()=>{
   const p=lanPair();p.host.active();for(let i=0;i<3;i++)p.tick();
   const seq=p.host.c.net_snapshot_seq;
-  for(let i=0;i<25;i++)p.host.step();assert.ok(p.host.c.net_snapshot_seq-seq<=2);
+  for(let i=0;i<25;i++)p.host.step();assert.ok(p.host.c.net_snapshot_seq-seq<=p.host.c.net_window);
   assert.equal(p.host.c.paused,true);const tick=p.host.c.phase_ticks;
   for(let i=0;i<20;i++)p.host.step();assert.equal(p.host.c.phase_ticks,tick);
   p.host.c.current_time+=6000;p.host.step();assert.equal(p.host.c.net_mode,'local');assert.equal(p.host.c.net_menu,true);
@@ -864,6 +864,34 @@ test('LAN screen is clickable and editable without modifying gameplay',()=>{
   }
   g.step({buttons:[1],x:120,y:260});assert.equal(g.c.net_mode,'host');
   g.step();g.step({buttons:[1],x:250,y:410});assert.equal(g.c.net_mode,'local');
+});
+test('LAN cadence measured with 100ms round trip and a 30Hz guest',()=>{
+  const p=lanPair(), pending=[];let received=0;
+  for(let frame=0;frame<300;frame++){
+    for(let i=pending.length-1;i>=0;i--)if(pending[i].at<=frame){
+      const item=pending.splice(i,1)[0];item.to.c.net_receive(item.packet);
+      if(item.packet.kind==='state'&&frame>=60)received++;
+    }
+    p.guest.step();p.host.step();
+    for(const [from,to,delay] of [[p.guest,p.host,1],[p.host,p.guest,2]])
+      for(const packet of from.packets.splice(0))pending.push({at:frame+delay,to,packet:plain(packet)});
+  }
+  console.log('LAN 100ms RTT steady snapshot rate: '+(received/8).toFixed(2)+' Hz');
+  assert.ok(received/8>=29,'Snapshot flow must sustain the 30Hz simulation at 100ms RTT');
+  assert.ok(p.guest.c.net_connected);
+});
+test('FPS measures elapsed time and HUD exposes local FPS and both peer RTTs',()=>{
+  const g=game();for(let i=0;i<60;i++)g.step();assert.equal(g.c.perf_fps,30);
+  g.texts.length=0;g.draw();assert.ok(g.texts.some(t=>t.text==='30 FPS'));
+  assert.ok(g.texts.some(t=>t.text==='PING --'));
+  for(let i=0;i<30;i++){g.c.current_time+=1000/30;g.step();}
+  assert.equal(g.c.perf_fps,15);
+  const p=lanPair();for(let i=0;i<60;i++)p.tick();
+  for(const peer of [p.host,p.guest]){
+    assert.ok(peer.c.net_rtt>=0);assert.ok(peer.c.perf_hz>=29);
+    peer.draw();assert.ok(peer.texts.some(t=>t.text.startsWith('PING ')&&t.text.endsWith('ms')));
+    peer.c.net_start(peer===p.host);assert.equal(peer.c.net_rtt,-1);
+  }
 });
 const report={passed:results.filter(r=>r.passed).length,failed:results.filter(r=>!r.passed).length,
   limitations:'Actual GML translated to JS with stub APIs; not GameMaker VM, graphics, audio or hardware verification.',tests:results};

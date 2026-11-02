@@ -6,7 +6,7 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-FILES = ['README.md', 'Install.cmd', 'Start_LAN.cmd', 'Start_Local_PvP.cmd',
+FILES = ['README.md', 'AGENTS.md', 'Install.cmd', 'Start_LAN.cmd', 'Start_Local_PvP.cmd',
          '.gitignore', '.gitattributes', 'THIRD_PARTY.md', 'build.py', 'patch.csx', 'verify.csx',
          'rules.json', 'assets/manifest.json', 'assets/game-assets.json', 'release/compatibility.json']
 TREES = {'gml': {'.gml'}, 'docs': {'.md'}, 'scripts': {'.ps1', '.py'},

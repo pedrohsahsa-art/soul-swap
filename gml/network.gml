@@ -31,7 +31,13 @@ net_test_seen_turn = 0;
 net_ack = -1;
 net_state_ack = -1;
 net_sent_at = [];
-net_rtt = 0;
+net_rtt = -1;
+net_window = 8;
+perf_started = current_time;
+perf_frames = 0;
+perf_states = 0;
+perf_fps = 0;
+perf_hz = 0;
 net_verified_states = 0;
 net_defender_focus = false;
 net_protocol = "SOULSWAP-LAN-1/" + mod_version;
@@ -111,6 +117,7 @@ net_start = function(_host) {
     net_ack = -1; net_state_ack = -1; net_queue = []; net_remote = undefined; net_sent_at = [];
     net_test_ticks = 0; net_test_damage = 0; net_test_swaps = 0; net_test_seen_turn = 0;
     net_started = current_time; net_last_rx = current_time;
+    net_rtt = -1; perf_started = current_time; perf_frames = 0; perf_states = 0; perf_hz = 0;
     net_buffer = buffer_create(4096, buffer_grow, 1);
     if (_host) {
         net_socket = network_create_server(network_socket_tcp, real(net_port_text), 2);
@@ -171,6 +178,7 @@ net_apply_state = function(_p) {
     net_defender_focus = _p.defender_focus;
     if (net_state_signature() != _p.signature) return false;
     net_verified_states++;
+    perf_states++;
     if (turn_damage > _old_damage) play_sfx(snd_hurt1);
     net_applied_seq = _p.seq;
     net_test_ticks = _p.test_ticks; net_test_damage = _p.test_damage; net_test_swaps = _p.test_swaps;
@@ -213,7 +221,12 @@ net_receive = function(_p) {
         if (!net_valid_input(_p) || _p.seq <= net_rx_seq) return;
         if (array_length(net_queue) >= 90) { net_close("Atraso excessivo na conexao. Reconecte."); return; }
         net_rx_seq = _p.seq; net_last_rx = current_time;
-        if (variable_struct_exists(_p, "state_ack") && net_number(_p.state_ack, -1, net_snapshot_seq - 1)) net_state_ack = max(net_state_ack, _p.state_ack);
+        if (variable_struct_exists(_p, "state_ack") && net_number(_p.state_ack, -1, net_snapshot_seq - 1) && _p.state_ack > net_state_ack) {
+            net_state_ack = _p.state_ack;
+            for (var _i = 0; _i < array_length(net_sent_at); _i++) {
+                if (net_sent_at[_i][0] == net_state_ack) net_rtt = current_time - net_sent_at[_i][1];
+            }
+        }
         array_push(net_queue, _p);
     } else if (net_mode == "client" && _p.kind == "state") {
         if (!variable_struct_exists(_p, "seq") || !net_number(_p.seq, 0, 1000000000) || _p.seq <= net_applied_seq) return;
@@ -308,6 +321,14 @@ net_test_input = function() {
 };
 
 net_frame = function() {
+    // Wall-clock throughput, not the engine's theoretical rendering capacity.
+    perf_frames++;
+    var _elapsed = current_time - perf_started;
+    if (_elapsed >= 1000) {
+        perf_fps = floor(perf_frames * 1000 / _elapsed + 0.5);
+        perf_hz = floor(perf_states * 1000 / _elapsed + 0.5);
+        perf_started = current_time; perf_frames = 0; perf_states = 0;
+    }
     net_clock++;
     if (net_test && net_connected) net_test_input();
     net_local_x = pointer_x; net_local_y = pointer_y;
@@ -386,8 +407,16 @@ net_end_frame = function() {
         if (phase == "dodge" && !paused) net_test_ticks++;
         if (turn_id != net_test_seen_turn) { net_test_seen_turn = turn_id; net_test_swaps++; }
         net_test_damage = max(net_test_damage, 200 - players[0].hp - players[1].hp);
-        // At most two outstanding snapshots: a slow guest cannot accumulate an unbounded TCP backlog.
-        if (net_snapshot_seq - net_state_ack <= 2) net_send(net_capture_state());
+        // Eight bounded in-flight states cover ordinary LAN/VPN RTT without stop-and-wait stalls.
+        // Do not build/serialize snapshots while the receiver is behind.
+        if (net_snapshot_seq - net_state_ack <= net_window) {
+            var _seq = net_snapshot_seq;
+            if (net_send(net_capture_state())) {
+                array_push(net_sent_at, [_seq, current_time]);
+                if (array_length(net_sent_at) > 32) array_delete(net_sent_at, 0, 1);
+                perf_states++;
+            }
+        }
     }
     if (net_mode != "local") {
         pointer_x = net_local_x; pointer_y = net_local_y;

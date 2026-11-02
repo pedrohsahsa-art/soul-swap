@@ -13,7 +13,7 @@
 ## Modelo de relato
 
 ```text
-Versão do pacote: 0.8.0-test.3
+Versão do pacote: 0.8.0-test.4
 FPS / PING / REDE por segundo nos dois PCs durante a travada:
 Windows dos dois PCs:
 Modo: local / LAN

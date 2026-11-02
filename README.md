@@ -1,6 +1,6 @@
 # SOUL / SWAP — DELTARUNE PvP local e LAN
 
-**Versão de testes: `0.8.0-test.3` · jogo/protocolo: `0.8.0` · Windows 64 bits**
+**Versão de testes: `0.8.0-test.4` · jogo: `0.8.0` · protocolo LAN: `2` · Windows 64 bits**
 
 Mod não oficial para dois jogadores: um ataca com o mouse e o outro desvia com o teclado. Os papéis se alternam. Inclui dez ataques, seleção de dupla, tutorial no jogo e conexão LAN por **IPv4 + porta TCP**.
 
@@ -27,7 +27,7 @@ Os hashes e nomes dos quatro arquivos aceitos estão em [`release/compatibility.
 
 ## Instalação — passo a passo
 
-1. Baixe **[SOUL-SWAP-0.8.0-test.3.zip](https://github.com/pedrohsahsa-art/soul-swap/releases/download/v0.8.0-test.3/SOUL-SWAP-0.8.0-test.3.zip)** na release do GitHub.
+1. Baixe **[SOUL-SWAP-0.8.0-test.4.zip](https://github.com/pedrohsahsa-art/soul-swap/releases/download/v0.8.0-test.4/SOUL-SWAP-0.8.0-test.4.zip)** na release do GitHub.
 2. Use **Extrair tudo**. Coloque a pasta em um local onde você possa gravar arquivos, por exemplo `Documentos\SOUL-SWAP`. **Não execute de dentro do ZIP nem extraia dentro da pasta original de DELTARUNE.**
 3. Abra **`Install.cmd`**. Não é necessário executar como administrador.
 4. O instalador procura o jogo nas bibliotecas Steam. Se não encontrar, selecione a pasta **DELTARUNE**, que contém `DELTARUNE.exe`, `chapter2_windows` e `mus`.
@@ -73,7 +73,9 @@ Se o Windows perguntar, permita o jogo na **rede privada**. O PC anfitrião prec
 
 ## Controles
 
-O topo mostra **FPS** locais (alvo: 30), **PING** de ida e volta em milissegundos e **REDE /s** (estados enviados pelo anfitrião ou recebidos pelo convidado). O ping inclui o processamento dos pacotes pelo jogo; `--` significa sem medição. As taxas são atualizadas a cada segundo. FPS perto de 30 com REDE baixa indica atualizações de rede irregulares; FPS baixo indica que o próprio jogo está rodando devagar.
+O topo mostra **FPS** locais (alvo: 30), **PING** de ida e volta em milissegundos e **REDE /s** (estados enviados pelo anfitrião ou recebidos pelo convidado). O ping usa uma mensagem própria, respondida no evento de rede, independente dos estados da partida. Ainda inclui o agendamento de eventos do GameMaker; não equivale ao ping ICMP do Windows. `--` significa sem medição. As taxas são atualizadas a cada segundo. FPS perto de 30 com REDE baixa indica atualizações de rede irregulares; FPS baixo indica que o próprio jogo está rodando devagar.
+
+**Os dois PCs precisam atualizar para test.4 ou posterior compatível:** o protocolo LAN 2 recusa as releases anteriores. Controles contínuos acumulados são substituídos pelos mais recentes, preservando ações discretas em ordem. Não há predição no cliente: a distância e a latência real da conexão ainda afetam a resposta.
 
 | Ação | Controle |
 |---|---|
@@ -108,7 +110,7 @@ Logs de instalação ficam em **`.logs`**. Veja [COMO-REPORTAR.md](docs/COMO-REP
 
 ## Estado da versão de testes
 
-- **96 testes automatizados passaram:** 90 de gameplay/interface/rede, 2 de configuração e 4 de distribuição.
+- **98 testes automatizados passaram:** 92 de gameplay/interface/rede, 2 de configuração e 4 de distribuição.
 - Instalação a partir de ZIP extraído em pasta limpa validada no Windows PowerShell 5.1, incluindo download automático, compilação e conferência dos arquivos originais.
 - Teste com **dois executáveis reais no mesmo PC**, conectados por TCP, verificou controles, papéis, dano, 747 estados recebidos e saída após fechar o anfitrião.
 - Formulário LAN e lobby foram conferidos em 640×480.

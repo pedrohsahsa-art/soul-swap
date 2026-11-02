@@ -32,6 +32,10 @@ net_ack = -1;
 net_state_ack = -1;
 net_sent_at = [];
 net_rtt = -1;
+net_probe_seq = 0;
+net_probe_pending = -1;
+net_probe_sent = 0;
+net_probe_next = 0;
 net_window = 8;
 perf_started = current_time;
 perf_frames = 0;
@@ -40,7 +44,7 @@ perf_fps = 0;
 perf_hz = 0;
 net_verified_states = 0;
 net_defender_focus = false;
-net_protocol = "SOULSWAP-LAN-1/" + mod_version;
+net_protocol = "SOULSWAP-LAN-2/" + mod_version;
 // Whitelist: never overwrite methods, socket handles, local preferences or local UI from a packet.
 net_fields = ["phase", "phase_ticks", "attacker", "defender", "opening_player", "turn_number", "turn_id",
     "players", "loadouts", "active_slot", "edit_slot", "pattern", "selection_page", "switch_timer",
@@ -118,6 +122,7 @@ net_start = function(_host) {
     net_test_ticks = 0; net_test_damage = 0; net_test_swaps = 0; net_test_seen_turn = 0;
     net_started = current_time; net_last_rx = current_time;
     net_rtt = -1; perf_started = current_time; perf_frames = 0; perf_states = 0; perf_hz = 0;
+    net_probe_pending = -1; net_probe_next = current_time;
     net_buffer = buffer_create(4096, buffer_grow, 1);
     if (_host) {
         net_socket = network_create_server(network_socket_tcp, real(net_port_text), 2);
@@ -183,9 +188,6 @@ net_apply_state = function(_p) {
     net_applied_seq = _p.seq;
     net_test_ticks = _p.test_ticks; net_test_damage = _p.test_damage; net_test_swaps = _p.test_swaps;
     net_ack = _p.ack;
-    for (var _i = 0; _i < array_length(net_sent_at); _i++) {
-        if (net_sent_at[_i][0] == net_ack) net_rtt = current_time - net_sent_at[_i][1];
-    }
     return true;
 };
 net_number = function(_v, _lo, _hi) {
@@ -217,15 +219,24 @@ net_receive = function(_p) {
         net_connected = true; net_menu = false; net_last_rx = current_time; return;
     }
     if (!net_connected) return;
+    if (_p.kind == "ping") {
+        if (variable_struct_exists(_p, "probe") && net_number(_p.probe, 0, 1000000000))
+            net_send({kind: "pong", protocol: net_protocol, probe: _p.probe});
+        return;
+    }
+    if (_p.kind == "pong") {
+        if (variable_struct_exists(_p, "probe") && net_probe_pending >= 0 && _p.probe == net_probe_pending) {
+            net_rtt = max(0, current_time - net_probe_sent);
+            net_probe_pending = -1;
+        }
+        return;
+    }
     if (net_mode == "host" && _p.kind == "input") {
         if (!net_valid_input(_p) || _p.seq <= net_rx_seq) return;
         if (array_length(net_queue) >= 90) { net_close("Atraso excessivo na conexao. Reconecte."); return; }
         net_rx_seq = _p.seq; net_last_rx = current_time;
         if (variable_struct_exists(_p, "state_ack") && net_number(_p.state_ack, -1, net_snapshot_seq - 1) && _p.state_ack > net_state_ack) {
             net_state_ack = _p.state_ack;
-            for (var _i = 0; _i < array_length(net_sent_at); _i++) {
-                if (net_sent_at[_i][0] == net_state_ack) net_rtt = current_time - net_sent_at[_i][1];
-            }
         }
         array_push(net_queue, _p);
     } else if (net_mode == "client" && _p.kind == "state") {
@@ -255,6 +266,11 @@ net_decode = function(_p) {
 net_no_edges = function(_p) {
     _p.data[3] = 0; _p.data[4] = 0; _p.data[6] = 0; _p.data[7] = 0;
     _p.data[8] = 0; _p.data[11] = 0; _p.data[14] = 0; _p.data[16] = 0;
+};
+net_has_edges = function(_p) {
+    var _d = _p.data;
+    return _d[3] != 0 || _d[4] != 0 || _d[6] != 0 || _d[7] != 0 ||
+        _d[8] != 0 || _d[11] != 0 || _d[14] != 0 || _d[16] != 0;
 };
 net_merge = function(_host, _guest) {
     var _role = phase == "lobby" || phase == "result" ? opening_player : attacker;
@@ -376,15 +392,15 @@ net_frame = function() {
     }
     var _local = net_pack_input(!_focused || help_open || _ui, _command);
     if (net_mode == "client") {
-        array_push(net_sent_at, [_local.seq, current_time]);
-        if (array_length(net_sent_at) > 180) array_delete(net_sent_at, 0, 1);
         net_send(_local);
         net_waiting = current_time - net_last_rx > 500;
         return false;
     }
     var _remote = net_remote;
-    if (array_length(net_queue) > 0) {
+    while (array_length(net_queue) > 0) {
         _remote = net_queue[0]; array_delete(net_queue, 0, 1);
+        // Superseded held movement/aim is not an action history. Preserve action edges in order.
+        if (_remote.epoch == net_epoch() && net_has_edges(_remote)) break;
     }
     if (is_undefined(_remote)) { net_waiting = true; return false; }
     net_remote = _remote;
@@ -403,6 +419,12 @@ net_frame = function() {
 };
 
 net_end_frame = function() {
+    if (net_connected && net_probe_pending >= 0 && current_time - net_probe_sent >= 1000) net_rtt = -1;
+    if (net_connected && current_time >= net_probe_next) {
+        net_probe_pending = net_probe_seq++;
+        net_probe_sent = current_time; net_probe_next = current_time + 1000;
+        net_send({kind: "ping", protocol: net_protocol, probe: net_probe_pending});
+    }
     if (net_mode == "host" && net_connected) {
         if (phase == "dodge" && !paused) net_test_ticks++;
         if (turn_id != net_test_seen_turn) { net_test_seen_turn = turn_id; net_test_swaps++; }
@@ -410,10 +432,7 @@ net_end_frame = function() {
         // Eight bounded in-flight states cover ordinary LAN/VPN RTT without stop-and-wait stalls.
         // Do not build/serialize snapshots while the receiver is behind.
         if (net_snapshot_seq - net_state_ack <= net_window) {
-            var _seq = net_snapshot_seq;
             if (net_send(net_capture_state())) {
-                array_push(net_sent_at, [_seq, current_time]);
-                if (array_length(net_sent_at) > 32) array_delete(net_sent_at, 0, 1);
                 perf_states++;
             }
         }

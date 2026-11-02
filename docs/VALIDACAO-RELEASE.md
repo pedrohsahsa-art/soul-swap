@@ -2,7 +2,11 @@
 
 Registro da validação completa da primeira release. A versão `0.8.0-test.2` troca a origem da música para `mus/joker.ogg`, preservando o gameplay e o protocolo 0.8.0.
 
-## Atualização test.3 — desempenho LAN
+## Atualização test.4 — latência
+
+Teste simulado com 13 pacotes de movimento acumulados: inversão de direção aplicada após 13 ticks antes e 1 tick depois (433 ms versus 33 ms a 30 FPS). Testes confirmam preservação ordenada das ações e rejeição de respostas de ping antigas/duplicadas. 92 testes de gameplay/rede, 2 de configuração e 4 de pacote passaram. Instalação limpa compilada e reaberta; teste com dois runners reais concluiu 621 ticks sincronizados, 3 trocas e 100 de dano, incluindo timeout do anfitrião. Captura do cliente: 30 FPS, ping dedicado 33 ms, REDE 30/s. Estes resultados não medem o computador ou a conexão do amigo.
+
+## Histórico test.3
 
 - 90 testes de gameplay/rede, 2 de configuração e 4 de distribuição passaram.
 - Simulação determinística de 100 ms de RTT, com 30 ticks/s: antes, 20 estados/s recebidos; depois, 30 estados/s. Medição do transporte simulado, não de CPU/GPU do GameMaker.

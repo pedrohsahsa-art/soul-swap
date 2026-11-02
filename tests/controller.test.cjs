@@ -893,6 +893,29 @@ test('FPS measures elapsed time and HUD exposes local FPS and both peer RTTs',()
     peer.c.net_start(peer===p.host);assert.equal(peer.c.net_rtt,-1);
   }
 });
+test('LAN held-input burst latency measurement',()=>{
+  const p=lanPair();p.host.active();for(let i=0;i<3;i++)p.tick();
+  for(let i=0;i<12;i++)p.guest.step({keys:[68]});
+  p.guest.step({keys:[65]});p.deliver(p.guest,p.host);
+  let frames=0;do {p.host.step();frames++;} while(p.host.c.input.move_x>=0&&frames<20);
+  console.log('Held-input reversal after burst: '+frames+' host ticks');
+  assert.equal(frames,1);assert.equal(p.host.c.net_queue.length,0);
+});
+test('LAN queue compaction preserves press/release actions and ping ignores stale replies',()=>{
+  const p=lanPair();for(let i=0;i<3;i++)p.tick();
+  const make=(seq)=>({kind:'input',protocol:p.host.c.net_protocol,seq,epoch:p.host.c.net_epoch(),data:[320,280,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]});
+  const first=p.host.c.net_rx_seq+1;
+  const press=make(first+1);press.data[6]=1;
+  const release=make(first+2);release.data[7]=1;
+  for(const packet of [make(first),press,release,make(first+3)])p.host.c.net_receive(packet);
+  p.host.step();assert.equal(p.host.c.net_remote.seq,first+1);
+  p.host.step();assert.equal(p.host.c.net_remote.seq,first+2);
+  p.host.step();assert.equal(p.host.c.net_remote.seq,first+3);
+  const c=p.guest.c;c.net_probe_pending=123;c.net_probe_sent=c.current_time-67;
+  c.net_receive({kind:'pong',protocol:c.net_protocol,probe:122});assert.equal(c.net_probe_pending,123);
+  c.net_receive({kind:'pong',protocol:c.net_protocol,probe:123});assert.equal(c.net_rtt,67);
+  c.current_time+=100;c.net_receive({kind:'pong',protocol:c.net_protocol,probe:123});assert.equal(c.net_rtt,67);
+});
 const report={passed:results.filter(r=>r.passed).length,failed:results.filter(r=>!r.passed).length,
   limitations:'Actual GML translated to JS with stub APIs; not GameMaker VM, graphics, audio or hardware verification.',tests:results};
 fs.writeFileSync(path.join(root,'build/logic-tests.json'),JSON.stringify(report,null,2));
